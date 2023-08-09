@@ -42,6 +42,7 @@ module DRAMagent #(
   assign end_address1 = mat_address1 + mat_mem_len;
 
   logic sending_read;
+  logic draining;
   logic [7:0] max_entries, expected_entries;
   assign max_entries = 8'd192;
 
@@ -83,7 +84,7 @@ module DRAMagent #(
   end
 
   
-  assign deq = (!block_deq) && (!sending_read) && (!empty);
+  assign deq = (!block_deq) && draining && (!empty);
 
   logic [511:0] data_to_write, write_buffer_out_delay;
   
@@ -257,7 +258,18 @@ module DRAMagent #(
   end
   */
 
-  assign sending_read = start_ff && (expected_entries < (max_entries)) && (!stop1);
+  //assign sending_read = start_ff && (expected_entries < (max_entries)) && (!stop1);
+
+
+  always_ff @(posedge clk) begin
+    if (reset || start) begin
+      draining <= 0;
+    end else if (expected_entries >= max_entries || stop1) begin 
+      draining <= 1;
+    end else if (empty) begin
+      draining <= 0;
+    end
+  end
 
   always_ff @(posedge clk) begin
     if (reset || start) begin
