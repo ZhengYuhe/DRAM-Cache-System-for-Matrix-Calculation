@@ -42,7 +42,7 @@ puts "after copying B"
 
 
 # send start signal and deassert
-master_write_32 $claim_path $burst_count_addr 8
+master_write_32 $claim_path $burst_count_addr 64
 master_write_32 $claim_path $start_addr 1
 master_write_32 $claim_path $start_addr 0
 puts "start"

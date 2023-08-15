@@ -266,7 +266,7 @@ module DRAMagent #(
       draining <= 0;
     end else if (expected_entries >= max_entries || stop1) begin 
       draining <= 1;
-    end else if (empty) begin
+    end else if (empty && (expected_entries < max_entries)) begin
       draining <= 0;
     end
   end
@@ -298,14 +298,14 @@ module DRAMagent #(
         write = 1;
         read = 0;
       end 
-      else if ((mat_to_read == 0) &&(!done) && (!stop0)) begin 
+      else if ((mat_to_read == 0) &&(!done) && (!stop0) && (!draining)) begin 
         burstcount = burst_setting[6:0];
         writedata = 0;
         address = read_address0; // emif is word addressed (512 bits), address of first word
         write = 0;
         read = 1;
       end 
-      else if ((mat_to_read == 1) &&(!done) && (!stop1)) begin 
+      else if ((mat_to_read == 1) &&(!done) && (!stop1) && (!draining)) begin 
         burstcount = burst_setting[6:0];
         writedata = 0;
         address = read_address1; // address of second word
