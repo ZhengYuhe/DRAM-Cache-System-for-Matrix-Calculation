@@ -266,7 +266,7 @@ module DRAMagent #(
       draining <= 0;
     end else if (expected_entries >= max_entries || stop1) begin 
       draining <= 1;
-    end else if (empty && (expected_entries < max_entries)) begin
+    end else if (expected_entries < max_entries) begin
       draining <= 0;
     end
   end
