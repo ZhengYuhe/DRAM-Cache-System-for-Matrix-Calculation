@@ -28,7 +28,7 @@ set csr_base 0x80000000
 set start_addr [expr $csr_base + 0x4]
 set done_addr  [expr $csr_base + 0x8]
 set cycle_count_lsb_addr  [expr $csr_base + 0xC]
-set cycle_count_msb_addr  [expr $csr_base + 0x10]
+set write_buffer_throushold_addr  [expr $csr_base + 0x10]
 set burst_count_addr [expr $csr_base + 0x14]
 
 # reset everything by master 0
@@ -42,7 +42,8 @@ puts "after copying B"
 
 
 # send start signal and deassert
-master_write_32 $claim_path $burst_count_addr 32
+master_write_32 $claim_path $write_buffer_throushold_addr 2048
+master_write_32 $claim_path $burst_count_addr 64
 master_write_32 $claim_path $start_addr 1
 master_write_32 $claim_path $start_addr 0
 puts "start"
@@ -56,10 +57,9 @@ while {$done == 0} {
 
 puts "done"
 
-puts "cycle_count_lsb:"
+puts "cycle_count:"
 puts [master_read_32 $claim_path $cycle_count_lsb_addr 0x1]
-puts "cycle_count_msb:"
-puts [master_read_32 $claim_path $cycle_count_msb_addr 0x1]
+
 
 master_read_to_file $claim_path "C.bin" $matC_base $mat_size_in_bytes
 puts "after writing C"

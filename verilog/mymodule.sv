@@ -73,6 +73,8 @@ module myModule(
   assign val_en[0] = 0;
   assign val_in[1] = 0;
   assign val_en[1] = 0;
+  assign val_in[4] = 0;
+  assign val_en[4] = 0;
   assign val_in[5] = 0;
   assign val_en[5] = 0;
 
@@ -83,17 +85,22 @@ module myModule(
   logic done;
   logic [31:0] count_cycle_msb, count_cycle_lsb;
   logic [27:0] burst_setting;
+  logic [10:0] max_entries_d, max_entries;
+  logic [31:0] write_buffer_throushold;
 
   // JTAG sends start signal by writing a 1 to CSR[1] (the signal is cleared after a few cycles, see tcl)
   assign start = val_out[1][0];
+  assign write_buffer_throushold  = val_out[4];
   assign burst_setting = val_out[5][27:0];
   assign val_in[2] = done;
   assign val_in[3] = count_cycle_lsb;
-  assign val_in[4] = count_cycle_msb;
   assign val_en[2] = 1;
   assign val_en[3] = 1;
-  assign val_en[4] = 1;
   
+  assign max_entries_d = write_buffer_throushold - burst_setting;
+  always_ff @(posedge clk) begin
+    max_entries <= max_entries_d;
+  end
 
 
   

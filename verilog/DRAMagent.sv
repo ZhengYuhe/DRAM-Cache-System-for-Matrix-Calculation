@@ -16,6 +16,7 @@ module DRAMagent #(
   output logic read_data_ready,
 
   input logic [27:0] burst_setting,
+  input logic [10:0]  max_entries,
 
   output logic [27 : 0] address,
   output logic  read,
@@ -43,13 +44,13 @@ module DRAMagent #(
 
   logic sending_read;
   logic draining;
-  logic [7:0] max_entries, expected_entries;
-  assign max_entries = 8'd192;
+  logic [10:0] expected_entries;
+  //assign max_entries = 11'd192;
 
   logic enq,deq,empty, full, fifo_clr, block_deq;
   logic [DATA_WIDTH-1:0] data_in,data_out;
   logic assert_write;
-  logic [7:0] fifo_amount;
+  logic [10:0] fifo_amount;
 
   assign fifo_clr = reset || start;
   
@@ -84,7 +85,7 @@ module DRAMagent #(
   end
 
   
-  assign deq = (!block_deq) && draining && (!empty);
+  assign deq = (!block_deq) && (!empty);
 
   logic [511:0] data_to_write, write_buffer_out_delay;
   
